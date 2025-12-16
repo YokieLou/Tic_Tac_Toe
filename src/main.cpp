@@ -3,6 +3,7 @@
 #include "SFML.hpp"
 #include "TokenType.hpp"
 #include "Console.hpp"
+#include "GroupShape.hpp"
 
 using namespace NS_COMP;
 using namespace NS_IHC; 

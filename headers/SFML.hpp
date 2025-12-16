@@ -6,6 +6,7 @@
 #include <ctime>
 #include <cstdlib>
 #include <string>
+#include "GroupShape.hpp"
 
 
 namespace NS_IHC{
@@ -14,7 +15,13 @@ namespace NS_IHC{
         private : 
             NS_SVC::Game game; 
             void draw(sf::RenderWindow& window);
-
+            sf::Text text;
+            sf::Font font;
+            sf::RectangleShape vBar; // Grid
+            sf::RectangleShape cBar; // Cross
+            sf::RectangleShape wBar; // Win 
+            sf::CircleShape circle;
+            
         public : 
             SFML();
             ~SFML();

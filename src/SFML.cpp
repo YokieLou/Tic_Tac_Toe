@@ -7,6 +7,38 @@ using namespace std;
 namespace NS_IHC{
     SFML::SFML(){
         this->game = Game();
+       
+        if (!this->font.loadFromFile("font/OpenSans.ttf"))
+        {
+            cout << "Problème d'affichage de la police !" << endl; 
+        }
+
+
+        this->text.setFont(font);
+        this->text.setCharacterSize(50);
+        this->text.setFillColor(sf::Color::Black);
+        sf::FloatRect bounds = text.getLocalBounds();
+        this->text.setOrigin(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
+        this->text.setPosition(950.f/2.f,950.f/2.f);
+
+
+        this->circle.setRadius(100);
+        this->circle.setOrigin(100, 100);  // Définit l'origine au centre du cercle
+        this->circle.setOutlineThickness(10);
+        this->circle.setOutlineColor(sf::Color::Red);
+
+        // Test 
+        sf::RectangleShape* vBar = new sf::RectangleShape(sf::Vector2f(10,950));
+        GroupShape grid;
+        grid.add(vBar);
+
+        this->vBar = *vBar;
+        this->vBar.setFillColor(sf::Color::Black);
+
+
+        this->cBar.setSize(sf::Vector2f(10,250)); // Création du coté de la croix
+        this->cBar.setOrigin(5, 125); // Milieu de la forme
+        this->cBar.setFillColor(sf::Color::Blue);
     }
 
     SFML::~SFML(){}
@@ -17,14 +49,9 @@ namespace NS_IHC{
         // TODO : APPLIQUER CELA ICI
         // TODO : AFFICHER LA FLECHE DE VICTOIRE SI VICTOIRE
         // TODO : BOUTON RESTART
+        // TODO : UNE CLASS GROUPSHAPE QUI PEUX CONTENIR TOUT ET N'IMPORTE EN TERME DE SHAPES (utile pour les formes plus complexes)
 
         sf::RenderWindow window(sf::VideoMode(950,950), "Tic Tac Toe"); // Création de base de la fenetre
-
-        sf::Font font;
-        if (!font.loadFromFile("font/OpenSans.ttf"))
-        {
-            cout << "Problème d'affichage de la police !" << endl; 
-        }
 
         this->draw(window);
         window.display();
@@ -39,64 +66,43 @@ namespace NS_IHC{
                 }
                     
                 else if (event.type == sf::Event::MouseButtonPressed) {
-                    if (event.mouseButton.button == sf::Mouse::Right){
+                    if (event.mouseButton.button == sf::Mouse::Right || event.mouseButton.button == sf::Mouse::Left){
                         if (!this->game.isWin() && !this->game.isDraw()) {
                             this->game.play(event.mouseButton.x/(950.f/3.f),event.mouseButton.y/(950.f/3.f));
                             this->draw(window);
-                        }
-                    
-                    sf::Vector2f mousePos(event.mouseButton.x, event.mouseButton.y);
-                    else if (text.getGlobalBounds().contains(mousePos)){
-                            sf::Text text;
-                            text.setFont(font);
-
-                            text.setCharacterSize(50);
-                            text.setFillColor(sf::Color::Black);
-                            
-                            sf::FloatRect bounds = text.getLocalBounds();
-                            text.setOrigin(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
-                            text.setPosition(950.f/2.f,950.f/2.f);
-
-                            window.draw(text);
                         }
                     }
                 }
             }
 
             if (this->game.isWin()) {
-                sf::Text text;
-                text.setFont(font);
                 TokenType winner = game.getWinner();
 
                 if (winner == CROSS) {
-                    text.setString("Victoire du joueur X");
+                    this->text.setString("Victoire du joueur X");
+
+                    sf::FloatRect bounds = this->text.getLocalBounds();
+                    this->text.setOrigin(bounds.left + bounds.width / 2, bounds.top  + bounds.height / 2);
+                    this->text.setPosition(950.f/2.f,950.f/2.f);
                 }
                 else if (winner == CIRCLE) {
-                    text.setString("Victoire du joueur O");
+                    this->text.setString("Victoire du joueur O");
+
+                    sf::FloatRect bounds = this->text.getLocalBounds();
+                    this->text.setOrigin(bounds.left + bounds.width / 2, bounds.top  + bounds.height / 2);
+                    this->text.setPosition(950.f/2.f,950.f/2.f);
                 }
                 
-                text.setCharacterSize(50);
-                text.setFillColor(sf::Color::Black);
-                
-                sf::FloatRect bounds = text.getLocalBounds();
-                text.setOrigin(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
-                text.setPosition(950.f/2.f,950.f/2.f);
-
-                window.draw(text);
+                window.draw(this->text);
             }
             else if (this->game.isDraw()) {
-                sf::Text text;
-                text.setFont(font);
-                text.setString("Draw");
+                this->text.setString("Draw");
 
-                text.setCharacterSize(50);
-                text.setFillColor(sf::Color::Black);
+                sf::FloatRect bounds = this->text.getLocalBounds();
+                this->text.setOrigin(bounds.left + bounds.width / 2, bounds.top  + bounds.height / 2);
+                this->text.setPosition(950.f/2.f,950.f/2.f);
 
-                sf::FloatRect bounds = text.getLocalBounds();
-                text.setOrigin(bounds.left + bounds.width / 2, bounds.top + bounds.height / 2);
-
-                text.setPosition(950.f/2.f,950.f/2.f);
-                window.draw(text);
+                window.draw(this->text);
             }
 
             window.display();
@@ -111,19 +117,17 @@ namespace NS_IHC{
     void SFML::draw(sf::RenderWindow& window){ 
         window.clear(sf::Color::White);
 
-        sf::RectangleShape vBar(sf::Vector2f(10,950));
-        vBar.setFillColor(sf::Color::Black);
-
         // Affichage des barres verticales
+        this->vBar.setRotation(0.f);
         for (int i = 1; i < 3 ;i++) {
-            vBar.setPosition(950.f* (i / 3.f),0.f); 
-            window.draw(vBar);
+            this->vBar.setPosition(950.f* (i / 3.f),0.f); 
+            window.draw(this->vBar);
         }
 
-        vBar.setRotation(vBar.getRotation() - 90.f);
+        this->vBar.setRotation(-90.f);
         for (int i = 1; i < 3 ;i++) {
-            vBar.setPosition(0.f,950.f*(i / 3.f)); 
-            window.draw(vBar);
+            this->vBar.setPosition(0.f,950.f*(i / 3.f)); 
+            window.draw(this->vBar);
         }
 
         // --------------------
@@ -139,27 +143,18 @@ namespace NS_IHC{
             float centerY = y * cellSize + cellSize/2;
 
             if (currentGrid.getCase(x,y) == CIRCLE){
-                sf::CircleShape circle(100);
-                circle.setOrigin(100, 100);  // Définit l'origine au centre du cercle
-                circle.setOutlineThickness(10);
-                circle.setOutlineColor(sf::Color::Red);
-                circle.setPosition(centerX,centerY);
-
-                window.draw(circle);
+                this->circle.setPosition(centerX,centerY);
+                window.draw(this->circle);
             }
 
             else if (currentGrid.getCase(x,y) == CROSS) {
-                sf::RectangleShape bar(sf::Vector2f(10,250)); // Création du coté de la croix
-                bar.setOrigin(5, 125); // Milieu de la forme
-                bar.setFillColor(sf::Color::Blue);
-                bar.setPosition(centerX, centerY);
-                bar.setRotation(bar.getRotation() - 45);
+                this->cBar.setPosition(centerX, centerY);
 
-                window.draw(bar);
+                this->cBar.setRotation(45);
+                window.draw(this->cBar);
 
-                bar.setRotation(bar.getRotation() - 90);
-
-                window.draw(bar);
+                this->cBar.setRotation(-45);
+                window.draw(this->cBar);
             }
         }
     }
